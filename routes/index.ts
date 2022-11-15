@@ -1,5 +1,18 @@
 import { Express } from "express";
-import { addFav, createDirector, deleteDirector, getDirector, getDirectors, login, register, updateDirector } from "../controllers";
+import {
+    addFav,
+    createDirector,
+    createMovie,
+    deleteDirector,
+    deleteMovie,
+    getDirector,
+    getDirectors,
+    getMovie,
+    login,
+    register,
+    updateDirector,
+    updateMovie,
+} from "../controllers";
 import { isAuth } from "../middlewares";
 
 export function routes(app: Express) {
@@ -23,8 +36,8 @@ export function routes(app: Express) {
 
     /* *********MOVIE********** */
 
-    // app.get("/api/movies/:id", isAuth, getMovie);
-    // app.post("/api/movies", isAuth, createMovie);
-    // app.put("/api/movies/:id", isAuth, updateMovie);
-    // app.delete("/api/movies/:id", isAuth, deleteMovie);
+    app.get("/api/movies/:id", isAuth, getMovie);
+    app.post("/api/movies", isAuth, createMovie);
+    app.put("/api/movies/:id", isAuth, updateMovie);
+    app.delete("/api/movies/:id", isAuth, deleteMovie);
 }
