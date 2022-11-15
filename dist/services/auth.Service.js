@@ -8,7 +8,7 @@ const jwt_simple_1 = __importDefault(require("jwt-simple"));
 const luxon_1 = require("luxon");
 const createToken = (userId) => {
     const payload = {
-        user: userId,
+        id: userId,
         iat: luxon_1.DateTime.local().toSeconds(),
         exp: luxon_1.DateTime.local().plus({ days: 14 }).toSeconds(),
     };

@@ -7,11 +7,7 @@ export function routes(app: Express) {
         res.status(200).send("Hola");
     });
 
-    app.post("/api/register", (req, res) => {
-        register(req, res);
-    });
+    app.post("/api/register", register);
 
-    app.post("/api/login", (req, res) => {
-        login(req, res);
-    });
+    app.post("/api/login", login);
 }

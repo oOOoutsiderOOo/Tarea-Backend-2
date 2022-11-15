@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 export const createToken = (userId: string) => {
     const payload = {
-        user: userId,
+        id: userId,
         iat: DateTime.local().toSeconds(),
         exp: DateTime.local().plus({ days: 14 }).toSeconds(),
     };

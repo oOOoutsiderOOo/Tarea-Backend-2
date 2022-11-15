@@ -1,1 +1,1 @@
-export { createToken, decodeToken } from "./auth.Service";
+export { createToken, decodeToken } from "./auth.service";

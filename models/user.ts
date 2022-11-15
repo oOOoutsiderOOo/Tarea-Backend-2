@@ -1,8 +1,17 @@
-import { Schema } from "mongoose";
+import { Schema, Document } from "mongoose";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const UserSchema = new Schema({
+export interface IUser {
+    email: string;
+    password: string;
+    favorites?: string[];
+    createdAt?: Date;
+}
+
+export interface IUserModel extends IUser, Document {}
+
+const UserSchema: Schema = new Schema<IUserModel>({
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     favorites: { type: Array },
@@ -28,4 +37,4 @@ UserSchema.pre("save", function (next) {
     });
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model<IUserModel>("User", UserSchema);

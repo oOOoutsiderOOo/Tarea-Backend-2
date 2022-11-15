@@ -7,11 +7,7 @@ function routes(app) {
     app.get("/api", middlewares_1.isAuth, (req, res) => {
         res.status(200).send("Hola");
     });
-    app.post("/api/register", (req, res) => {
-        (0, controllers_1.register)(req, res);
-    });
-    app.post("/api/login", (req, res) => {
-        (0, controllers_1.login)(req, res);
-    });
+    app.post("/api/register", controllers_1.register);
+    app.post("/api/login", controllers_1.login);
 }
 exports.routes = routes;
