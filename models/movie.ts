@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 const MovieSchema = new Schema({
     directorId: { type: String, required: true },
-    title: { type: String, required: true },
+    title: { type: String, required: true, unique: true },
     synopsis: { type: String, required: true },
     coverURL: { type: String, required: true },
     link: { type: String, required: true },

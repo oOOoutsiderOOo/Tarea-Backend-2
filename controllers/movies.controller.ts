@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { MovieSchema } from "../schemas";
-import { updateDirectorDocument } from "../services/directors.service";
+import { deleteMovieFromArray, updateDirectorDocument } from "../services/directors.service";
 const Movie = require("../models/movie");
 const Director = require("../models/director");
 
@@ -52,7 +52,7 @@ const createMovie = async (req: Request, res: Response) => {
             }
             updateDirectorDocument(directorId, { movies: [...checkedDirector.movies, newMovie._id] })
                 .then(() => {
-                    res.status(200).send({
+                    res.status(201).send({
                         message: "Movie created",
                     });
                 })
@@ -65,8 +65,43 @@ const createMovie = async (req: Request, res: Response) => {
     }
 };
 
-const updateMovie = async (req: Request, res: Response) => {};
+const updateMovie = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { directorId, title, synopsis, coverURL, link } = req.body;
 
-const deleteMovie = async (req: Request, res: Response) => {};
+    const parseResult = MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
+    if (!parseResult.success) {
+        return res.status(400).send({ error: parseResult.error.message });
+    }
+
+    try {
+        const movie = await Movie.findByIdAndUpdate(id, parseResult.data);
+        if (!movie) {
+            return res.status(404).send({ error: "Movie not found" });
+        }
+        res.status(200).send({ message: "Movie updated" });
+    } catch (error) {
+        res.status(500).send({ error });
+    }
+};
+
+const deleteMovie = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const movie = await Movie.findByIdAndDelete(id);
+        if (!movie) {
+            return res.status(404).send({ error: "Movie not found" });
+        }
+        deleteMovieFromArray(movie.directorId, id)
+            .then(() => {
+                res.status(200).send({ message: "Movie deleted" });
+            })
+            .catch((error: MongooseError) => {
+                return res.status(500).send({ error });
+            });
+    } catch (error) {
+        res.status(500).send({ error });
+    }
+};
 
 export { getMovies, createMovie, updateMovie, deleteMovie };

@@ -16,3 +16,9 @@ export const updateDirectorDocument = async (id: string, newData: newData) => {
         movies: movies,
     });
 };
+
+export const deleteMovieFromArray = async (id: string, movieId: string) => {
+    return await Director.findByIdAndUpdate(id, {
+        $pull: { movies: movieId },
+    });
+};

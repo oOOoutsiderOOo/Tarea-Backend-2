@@ -7,7 +7,7 @@ const mongoose_1 = require("mongoose");
 const mongoose_2 = __importDefault(require("mongoose"));
 const MovieSchema = new mongoose_1.Schema({
     directorId: { type: String, required: true },
-    title: { type: String, required: true },
+    title: { type: String, required: true, unique: true },
     synopsis: { type: String, required: true },
     coverURL: { type: String, required: true },
     link: { type: String, required: true },

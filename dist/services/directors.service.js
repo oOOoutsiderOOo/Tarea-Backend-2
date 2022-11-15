@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDirectorDocument = void 0;
+exports.deleteMovieFromArray = exports.updateDirectorDocument = void 0;
 const Director = require("../models/director");
 const updateDirectorDocument = (id, newData) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, bio, imageURL, movies } = newData;
@@ -21,3 +21,9 @@ const updateDirectorDocument = (id, newData) => __awaiter(void 0, void 0, void 0
     });
 });
 exports.updateDirectorDocument = updateDirectorDocument;
+const deleteMovieFromArray = (id, movieId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield Director.findByIdAndUpdate(id, {
+        $pull: { movies: movieId },
+    });
+});
+exports.deleteMovieFromArray = deleteMovieFromArray;

@@ -58,7 +58,7 @@ const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             }
             (0, directors_service_1.updateDirectorDocument)(directorId, { movies: [...checkedDirector.movies, newMovie._id] })
                 .then(() => {
-                res.status(200).send({
+                res.status(201).send({
                     message: "Movie created",
                 });
             })
@@ -72,7 +72,42 @@ const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.createMovie = createMovie;
-const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const { directorId, title, synopsis, coverURL, link } = req.body;
+    const parseResult = schemas_1.MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
+    if (!parseResult.success) {
+        return res.status(400).send({ error: parseResult.error.message });
+    }
+    try {
+        const movie = yield Movie.findByIdAndUpdate(id, parseResult.data);
+        if (!movie) {
+            return res.status(404).send({ error: "Movie not found" });
+        }
+        res.status(200).send({ message: "Movie updated" });
+    }
+    catch (error) {
+        res.status(500).send({ error });
+    }
+});
 exports.updateMovie = updateMovie;
-const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const movie = yield Movie.findByIdAndDelete(id);
+        if (!movie) {
+            return res.status(404).send({ error: "Movie not found" });
+        }
+        (0, directors_service_1.deleteMovieFromArray)(movie.directorId, id)
+            .then(() => {
+            res.status(200).send({ message: "Movie deleted" });
+        })
+            .catch((error) => {
+            return res.status(500).send({ error });
+        });
+    }
+    catch (error) {
+        res.status(500).send({ error });
+    }
+});
 exports.deleteMovie = deleteMovie;

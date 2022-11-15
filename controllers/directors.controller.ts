@@ -43,7 +43,7 @@ const createDirector = async (req: Request, res: Response) => {
                 error: error.message.startsWith("E11000") ? "Director already exists" : error.message,
             });
         }
-        res.status(200).send({
+        res.status(201).send({
             message: "Director created",
         });
     });
