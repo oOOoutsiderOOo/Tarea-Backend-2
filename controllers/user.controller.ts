@@ -61,4 +61,6 @@ const register = async (req: Request, res: Response) => {
     });
 };
 
-export { login, register };
+const addFav = async (req: Request, res: Response) => {};
+
+export { login, register, addFav };

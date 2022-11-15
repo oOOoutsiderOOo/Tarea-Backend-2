@@ -11,6 +11,7 @@
         "zod": "^3.19.1"
     },
     "scripts": {
+        "start": "tsc & nodemon -r dotenv/config ./dist",
         "dev": "nodemon -r dotenv/config ./dist"
     },
     "devDependencies": {

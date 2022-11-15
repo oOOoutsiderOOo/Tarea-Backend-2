@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const mongoose_2 = __importDefault(require("mongoose"));
 const DirectorSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     bio: { type: String, required: true },
     imageURL: { type: String, required: true },
     movies: { type: Array },

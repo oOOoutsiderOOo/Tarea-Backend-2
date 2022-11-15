@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = exports.login = void 0;
+exports.addFav = exports.register = exports.login = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const services_1 = require("../services");
 const schemas_1 = require("../schemas");
@@ -66,3 +66,5 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 exports.register = register;
+const addFav = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+exports.addFav = addFav;
