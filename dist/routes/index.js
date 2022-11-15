@@ -18,7 +18,7 @@ function routes(app) {
     app.put("/api/directors/:id", middlewares_1.isAuth, controllers_1.updateDirector);
     app.delete("/api/directors/:id", middlewares_1.isAuth, controllers_1.deleteDirector);
     /* *********MOVIE********** */
-    app.get("/api/movies/:id", middlewares_1.isAuth, controllers_1.getMovie);
+    app.get("/api/movies/:id", middlewares_1.isAuth, controllers_1.getMovies);
     app.post("/api/movies", middlewares_1.isAuth, controllers_1.createMovie);
     app.put("/api/movies/:id", middlewares_1.isAuth, controllers_1.updateMovie);
     app.delete("/api/movies/:id", middlewares_1.isAuth, controllers_1.deleteMovie);

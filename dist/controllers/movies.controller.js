@@ -9,14 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovie = exports.getMovies = void 0;
+exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovies = void 0;
 const schemas_1 = require("../schemas");
+const directors_service_1 = require("../services/directors.service");
 const Movie = require("../models/movie");
 const Director = require("../models/director");
-const getMovies = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const getMovies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const directorId = req.params.id;
+    try {
+        const director = yield Director.findById(directorId);
+        if (!director) {
+            return res.status(404).send({ error: "Director not found" });
+        }
+        const movies = yield Movie.find({ directorId });
+        if (movies.length === 0) {
+            return res.status(404).send({ error: `${director.name} has no movies in the app. Go ahead and add one!` });
+        }
+        res.status(200).send(movies);
+    }
+    catch (error) {
+        res.status(500).send({ error });
+    }
+});
 exports.getMovies = getMovies;
-const getMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
-exports.getMovie = getMovie;
 const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { directorId, title, synopsis, coverURL, link } = req.body;
     const parseResult = schemas_1.MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
@@ -41,8 +56,14 @@ const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     error: error.message.startsWith("E11000") ? "Movie already exists" : error.message,
                 });
             }
-            res.status(200).send({
-                message: "Movie created",
+            (0, directors_service_1.updateDirectorDocument)(directorId, { movies: [...checkedDirector.movies, newMovie._id] })
+                .then(() => {
+                res.status(200).send({
+                    message: "Movie created",
+                });
+            })
+                .catch((error) => {
+                return res.status(500).send({ error });
             });
         });
     }

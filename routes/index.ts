@@ -7,7 +7,7 @@ import {
     deleteMovie,
     getDirector,
     getDirectors,
-    getMovie,
+    getMovies,
     login,
     register,
     updateDirector,
@@ -36,7 +36,7 @@ export function routes(app: Express) {
 
     /* *********MOVIE********** */
 
-    app.get("/api/movies/:id", isAuth, getMovie);
+    app.get("/api/movies/:id", isAuth, getMovies);
     app.post("/api/movies", isAuth, createMovie);
     app.put("/api/movies/:id", isAuth, updateMovie);
     app.delete("/api/movies/:id", isAuth, deleteMovie);

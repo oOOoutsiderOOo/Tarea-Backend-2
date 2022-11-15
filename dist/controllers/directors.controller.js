@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteDirector = exports.updateDirector = exports.createDirector = exports.getDirector = exports.getDirectors = void 0;
 const schemas_1 = require("../schemas");
+const directors_service_1 = require("../services/directors.service");
 const Director = require("../models/director");
 const getDirectors = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const directors = yield Director.find();
@@ -63,12 +64,7 @@ const updateDirector = (req, res) => __awaiter(void 0, void 0, void 0, function*
         return res.status(400).send({ error: parseResult.error.message });
     }
     try {
-        const director = yield Director.findByIdAndUpdate(id, {
-            name: parseResult.data.name,
-            bio: parseResult.data.bio,
-            imageURL: parseResult.data.imageURL,
-            movies: parseResult.data.movies,
-        });
+        const director = yield (0, directors_service_1.updateDirectorDocument)(id, parseResult.data);
         if (!director) {
             return res.status(404).send({ error: "Director not found" });
         }

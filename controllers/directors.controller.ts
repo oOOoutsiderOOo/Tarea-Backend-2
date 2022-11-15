@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { DirectorSchema } from "../schemas";
+import { updateDirectorDocument } from "../services/directors.service";
 const Director = require("../models/director");
 
 const getDirectors = async (req: Request, res: Response) => {
@@ -58,12 +59,7 @@ const updateDirector = async (req: Request, res: Response) => {
     }
 
     try {
-        const director = await Director.findByIdAndUpdate(id, {
-            name: parseResult.data.name,
-            bio: parseResult.data.bio,
-            imageURL: parseResult.data.imageURL,
-            movies: parseResult.data.movies,
-        });
+        const director = await updateDirectorDocument(id, parseResult.data);
         if (!director) {
             return res.status(404).send({ error: "Director not found" });
         }

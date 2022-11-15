@@ -1,12 +1,27 @@
 import { Request, Response } from "express";
 import { MongooseError } from "mongoose";
 import { MovieSchema } from "../schemas";
+import { updateDirectorDocument } from "../services/directors.service";
 const Movie = require("../models/movie");
 const Director = require("../models/director");
 
-const getMovies = async (req: Request, res: Response) => {};
+const getMovies = async (req: Request, res: Response) => {
+    const directorId = req.params.id;
+    try {
+        const director = await Director.findById(directorId);
+        if (!director) {
+            return res.status(404).send({ error: "Director not found" });
+        }
 
-const getMovie = async (req: Request, res: Response) => {};
+        const movies = await Movie.find({ directorId });
+        if (movies.length === 0) {
+            return res.status(404).send({ error: `${director.name} has no movies in the app. Go ahead and add one!` });
+        }
+        res.status(200).send(movies);
+    } catch (error) {
+        res.status(500).send({ error });
+    }
+};
 
 const createMovie = async (req: Request, res: Response) => {
     const { directorId, title, synopsis, coverURL, link } = req.body;
@@ -35,9 +50,15 @@ const createMovie = async (req: Request, res: Response) => {
                     error: error.message.startsWith("E11000") ? "Movie already exists" : error.message,
                 });
             }
-            res.status(200).send({
-                message: "Movie created",
-            });
+            updateDirectorDocument(directorId, { movies: [...checkedDirector.movies, newMovie._id] })
+                .then(() => {
+                    res.status(200).send({
+                        message: "Movie created",
+                    });
+                })
+                .catch((error: MongooseError) => {
+                    return res.status(500).send({ error });
+                });
         });
     } catch (error) {
         res.status(500).send({ error });
@@ -48,4 +69,4 @@ const updateMovie = async (req: Request, res: Response) => {};
 
 const deleteMovie = async (req: Request, res: Response) => {};
 
-export { getMovies, getMovie, createMovie, updateMovie, deleteMovie };
+export { getMovies, createMovie, updateMovie, deleteMovie };
