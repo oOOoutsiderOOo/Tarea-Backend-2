@@ -1,12 +1,23 @@
 {
-  "dependencies": {
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "nodemon": "^2.0.20"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.14",
-    "@types/node": "^18.11.9",
-    "typescript": "^4.8.4"
-  }
+    "dependencies": {
+        "@types/mongoose": "^5.11.97",
+        "bcrypt": "^5.1.0",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "jwt-simple": "^0.5.6",
+        "luxon": "^3.1.0",
+        "mongoose": "^6.7.2",
+        "nodemon": "^2.0.20",
+        "zod": "^3.19.1"
+    },
+    "scripts": {
+        "dev": "nodemon -r dotenv/config ./dist"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.0",
+        "@types/express": "^4.17.14",
+        "@types/luxon": "^3.1.0",
+        "@types/node": "^18.11.9",
+        "typescript": "^4.8.4"
+    }
 }
