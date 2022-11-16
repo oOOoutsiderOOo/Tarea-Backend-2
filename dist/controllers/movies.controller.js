@@ -14,7 +14,7 @@ const schemas_1 = require("../schemas");
 const services_1 = require("../services");
 const getMovies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const directorId = req.params.id;
-    const result = yield (0, services_1.getMoviesService)(directorId).catch((error) => {
+    const result = yield (0, services_1.getMoviesService)(directorId).catch(error => {
         return { status: 500, error };
     });
     res.status(result.status).send(result);
@@ -24,12 +24,12 @@ const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { directorId, title, synopsis, coverURL, link } = req.body;
     const parseResult = schemas_1.MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
-    const result = yield (0, services_1.createMovieService)(directorId, title, synopsis, coverURL, link).catch((error) => {
-        return { status: 500, error };
+    const result = yield (0, services_1.createMovieService)(directorId, title, synopsis, coverURL, link).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send(result);
+    res.status(result.status).send(result.message);
 });
 exports.createMovie = createMovie;
 const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,19 +37,19 @@ const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { directorId, title, synopsis, coverURL, link } = req.body;
     const parseResult = schemas_1.MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
-    const result = yield (0, services_1.updateMovieService)(id, parseResult.data).catch((error) => {
-        return { status: 500, error };
+    const result = yield (0, services_1.updateMovieService)(id, parseResult.data).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send({ message: "Movie updated" });
+    res.status(result.status).send(result.message);
 });
 exports.updateMovie = updateMovie;
 const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield (0, services_1.deleteMovieService)(id).catch((error) => {
-        return { status: 500, error };
+    const result = yield (0, services_1.deleteMovieService)(id).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send({ message: "Movie deleted" });
+    res.status(result.status).send(result.message);
 });
 exports.deleteMovie = deleteMovie;

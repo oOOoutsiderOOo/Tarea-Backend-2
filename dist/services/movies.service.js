@@ -26,43 +26,59 @@ const getMoviesService = (directorId) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.getMoviesService = getMoviesService;
 const createMovieService = (directorId, title, synopsis, coverURL, link) => __awaiter(void 0, void 0, void 0, function* () {
-    const director = yield Director.findById(directorId);
-    if (!director) {
-        return { status: 400, error: "Director not found" };
-    }
-    const newMovie = new Movie({
-        directorId,
-        title,
-        synopsis,
-        coverURL,
-        link,
-    });
-    newMovie.save((error) => {
-        if (error) {
-            return { status: 400, error: error.message.startsWith("E11000") ? "Movie already exists" : error.message };
+    try {
+        const director = yield Director.findById(directorId);
+        if (!director) {
+            throw { status: 400, error: "Director ID is not valid" };
         }
-        return { status: 500, error };
-    });
-    (0, directors_service_1.updateDirectorDocument)(directorId, { movies: [...director.movies, newMovie._id] }).catch((error) => {
-        return { status: 500, error };
-    });
-    return { status: 201, message: "Movie created" };
+        const newMovie = new Movie({
+            directorId,
+            title,
+            synopsis,
+            coverURL,
+            link,
+        });
+        yield newMovie.save().catch((error) => {
+            throw { status: 400, error: error.message.startsWith("E11000") ? "Movie already exists" : error.message };
+        });
+        (0, directors_service_1.updateDirectorService)(directorId, { movies: [...director.movies, newMovie._id] }).catch(error => {
+            throw { status: 500, error };
+        });
+        return { status: 201, message: "Movie created" };
+    }
+    catch (error) {
+        throw error;
+    }
 });
 exports.createMovieService = createMovieService;
 const updateMovieService = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
     //TODO - handle directorId change
-    const movie = yield Movie.findByIdAndUpdate(id, data);
-    if (!movie) {
-        return { status: 404, error: "Movie not found" };
+    try {
+        const movie = yield Movie.findByIdAndUpdate(id, data).catch((error) => {
+            throw { status: 500, error };
+        });
+        if (!movie) {
+            throw { status: 404, error: "Movie not found" };
+        }
+        return { status: 200, message: "Movie updated" };
     }
-    return { status: 200, message: "Movie updated" };
+    catch (error) {
+        throw error;
+    }
 });
 exports.updateMovieService = updateMovieService;
 const deleteMovieService = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const movie = yield Movie.findByIdAndDelete(id);
-    if (!movie) {
-        return { status: 404, error: "Movie not found" };
+    try {
+        const movie = yield Movie.findByIdAndDelete(id).catch((error) => {
+            throw { status: 500, error };
+        });
+        if (!movie) {
+            throw { status: 404, error: "Movie not found" };
+        }
+        return { status: 200, message: "Movie deleted" };
     }
-    return { status: 200, message: "Movie deleted" };
+    catch (error) {
+        throw error;
+    }
 });
 exports.deleteMovieService = deleteMovieService;

@@ -15,29 +15,29 @@ const services_1 = require("../services");
 const Director = require("../models/director");
 const getDirectors = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const directors = yield Director.find().catch((error) => {
-        res.status(500).send({ error });
+        return res.status(500).send(error);
     });
     res.status(200).send(directors);
 });
 exports.getDirectors = getDirectors;
 const getDirector = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield (0, services_1.getDirectorService)(id).catch((error) => {
-        res.status(500).send({ error });
+    const result = yield (0, services_1.getDirectorService)(id).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.send(result);
+    res.status(result.status).send(result.director);
 });
 exports.getDirector = getDirector;
 const createDirector = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, bio, imageURL, movies } = req.body;
     const parseResult = schemas_1.DirectorSchema.safeParse({ name, bio, imageURL, movies });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
-    const result = yield (0, services_1.createDirectorService)(parseResult.data).catch((error) => {
-        res.status(500).send({ error });
+    const result = yield (0, services_1.createDirectorService)(parseResult.data).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(201).send(result);
+    res.status(result.status).send(result.message);
 });
 exports.createDirector = createDirector;
 const updateDirector = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -45,19 +45,19 @@ const updateDirector = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { name, bio, imageURL, movies } = req.body;
     const parseResult = schemas_1.DirectorSchema.safeParse({ name, bio, imageURL, movies });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
-    const result = yield (0, services_1.updateDirectorDocument)(id, parseResult.data).catch((error) => {
-        res.status(500).send({ error });
+    const result = yield (0, services_1.updateDirectorService)(id, parseResult.data).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    result && res.status(result.status).send(result);
+    res.status(result.status).send(result.message);
 });
 exports.updateDirector = updateDirector;
 const deleteDirector = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield (0, services_1.deleteDirectorService)(id).catch((error) => {
-        res.status(500).send({ error });
+    const result = yield (0, services_1.deleteDirectorService)(id).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(200).send(result);
+    res.status(result.status).send(result.message);
 });
 exports.deleteDirector = deleteDirector;

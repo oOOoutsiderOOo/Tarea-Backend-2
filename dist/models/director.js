@@ -9,7 +9,7 @@ const DirectorSchema = new mongoose_1.Schema({
     name: { type: String, required: true, unique: true },
     bio: { type: String, required: true },
     imageURL: { type: String, required: true },
-    movies: { type: [mongoose_1.Schema.Types.ObjectId], ref: "Movie" },
+    movies: [{ type: mongoose_1.Schema.Types.ObjectId, ref: "Movie" }],
     createdAt: { type: Date, default: Date.now() },
 });
 module.exports = mongoose_2.default.model("Director", DirectorSchema);

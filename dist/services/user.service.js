@@ -39,32 +39,35 @@ const registerService = (email, password) => __awaiter(void 0, void 0, void 0, f
     }
     yield newUser.save((error) => {
         if (error) {
-            return { status: 400, message: "Email is taken" };
+            return { status: 400, error: "Email is taken" };
         }
     });
     return { status: 200, message: "Signup success! Please login." };
 });
 exports.registerService = registerService;
 const addFavService = (userId, favId) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User.findById(userId).catch((error) => {
-        return { status: 400, message: "User id is not valid", error };
-    });
-    const fav = yield Movie.findById(favId).catch((error) => {
-        return { status: 400, message: "Favorite id is not valid", error };
-    });
-    if (!user || !fav) {
-        return { status: 400, message: "User or favorite does not exist" };
-    }
-    const favExists = user.favorites.find((favorite) => favorite === favId);
-    if (favExists) {
-        return { status: 400, message: "Favorite already exists" };
-    }
-    user.favorites.push(fav._id);
-    yield user.save((error) => {
-        if (error) {
-            return { status: 400, message: "Error adding favorite", error };
+    try {
+        const user = yield User.findById(userId).catch((error) => {
+            throw { status: 400, message: "User id is not valid", error };
+        });
+        const fav = yield Movie.findById(favId).catch((error) => {
+            throw { status: 400, message: "Favorite id is not valid", error };
+        });
+        if (!user || !fav) {
+            throw { status: 400, message: "User or favorite does not exist" };
         }
-    });
-    return { status: 200, message: "Favorite added" };
+        const favExists = user.favorites.find((favorite) => favorite.toString() === favId);
+        if (favExists) {
+            throw { status: 400, message: "Favorite already exists" };
+        }
+        user.favorites.push(fav._id);
+        yield user.save().catch((error) => {
+            throw { status: 500, message: "Error saving user", error };
+        });
+        return { status: 200, message: "Favorite added" };
+    }
+    catch (error) {
+        throw error;
+    }
 });
 exports.addFavService = addFavService;

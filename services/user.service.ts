@@ -27,35 +27,37 @@ export const registerService = async (email: string, password: string) => {
 
     await newUser.save((error: MongooseError) => {
         if (error) {
-            return { status: 400, message: "Email is taken" };
+            return { status: 400, error: "Email is taken" };
         }
     });
     return { status: 200, message: "Signup success! Please login." };
 };
 
 export const addFavService = async (userId: string, favId: string) => {
-    const user = await User.findById(userId).catch((error: MongooseError) => {
-        return { status: 400, message: "User id is not valid", error };
-    });
-    const fav = await Movie.findById(favId).catch((error: MongooseError) => {
-        return { status: 400, message: "Favorite id is not valid", error };
-    });
+    try {
+        const user = await User.findById(userId).catch((error: MongooseError) => {
+            throw { status: 400, message: "User id is not valid", error };
+        });
+        const fav = await Movie.findById(favId).catch((error: MongooseError) => {
+            throw { status: 400, message: "Favorite id is not valid", error };
+        });
 
-    if (!user || !fav) {
-        return { status: 400, message: "User or favorite does not exist" };
-    }
-
-    const favExists = user.favorites.find((favorite: any) => favorite === favId);
-    if (favExists) {
-        return { status: 400, message: "Favorite already exists" };
-    }
-
-    user.favorites.push(fav._id);
-    await user.save((error: MongooseError) => {
-        if (error) {
-            return { status: 400, message: "Error adding favorite", error };
+        if (!user || !fav) {
+            throw { status: 400, message: "User or favorite does not exist" };
         }
-    });
 
-    return { status: 200, message: "Favorite added" };
+        const favExists = user.favorites.find((favorite: any) => favorite.toString() === favId);
+        if (favExists) {
+            throw { status: 400, message: "Favorite already exists" };
+        }
+
+        user.favorites.push(fav._id);
+        await user.save().catch((error: MongooseError) => {
+            throw { status: 500, message: "Error saving user", error };
+        });
+
+        return { status: 200, message: "Favorite added" };
+    } catch (error) {
+        throw error;
+    }
 };

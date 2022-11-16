@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import { MongooseError } from "mongoose";
 import { MovieSchema } from "../schemas";
 import { createMovieService, deleteMovieService, getMoviesService, updateMovieService } from "../services";
 
 const getMovies = async (req: Request, res: Response) => {
     const directorId = req.params.id;
-    const result = await getMoviesService(directorId).catch((error: MongooseError) => {
+    const result = await getMoviesService(directorId).catch(error => {
         return { status: 500, error };
     });
     res.status(result.status).send(result);
@@ -16,13 +15,13 @@ const createMovie = async (req: Request, res: Response) => {
 
     const parseResult = MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
 
-    const result = await createMovieService(directorId, title, synopsis, coverURL, link).catch((error: MongooseError) => {
-        return { status: 500, error };
+    const result: any = await createMovieService(directorId, title, synopsis, coverURL, link).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send(result);
+    res.status(result.status).send(result.message);
 };
 
 const updateMovie = async (req: Request, res: Response) => {
@@ -31,21 +30,21 @@ const updateMovie = async (req: Request, res: Response) => {
 
     const parseResult = MovieSchema.safeParse({ directorId, title, synopsis, coverURL, link });
     if (!parseResult.success) {
-        return res.status(400).send({ error: parseResult.error.message });
+        return res.status(400).send({ error: parseResult.error });
     }
 
-    const result = await updateMovieService(id, parseResult.data).catch((error: MongooseError) => {
-        return { status: 500, error };
+    const result: any = await updateMovieService(id, parseResult.data).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send({ message: "Movie updated" });
+    res.status(result.status).send(result.message);
 };
 
 const deleteMovie = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await deleteMovieService(id).catch((error: MongooseError) => {
-        return { status: 500, error };
+    const result: any = await deleteMovieService(id).catch(error => {
+        return res.status(error.status || 500).send(error);
     });
-    res.status(result.status).send({ message: "Movie deleted" });
+    res.status(result.status).send(result.message);
 };
 
 export { getMovies, createMovie, updateMovie, deleteMovie };

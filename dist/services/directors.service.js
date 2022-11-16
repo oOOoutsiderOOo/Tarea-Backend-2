@@ -9,22 +9,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDirectorService = exports.createDirectorService = exports.getDirectorService = exports.deleteMovieFromArray = exports.updateDirectorDocument = void 0;
+exports.deleteDirectorService = exports.createDirectorService = exports.getDirectorService = exports.deleteMovieFromArray = exports.updateDirectorService = void 0;
 const Director = require("../models/director");
-const updateDirectorDocument = (id, newData) => __awaiter(void 0, void 0, void 0, function* () {
+const updateDirectorService = (id, newData) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, bio, imageURL, movies } = newData;
-    const director = yield Director.findByIdAndUpdate(id, {
-        name: name,
-        bio: bio,
-        imageURL: imageURL,
-        movies: movies,
-    });
-    if (!director) {
-        return { status: 404, error: "Director not found" };
+    try {
+        const director = yield Director.findByIdAndUpdate(id, {
+            name: name,
+            bio: bio,
+            imageURL: imageURL,
+            movies: movies,
+        }).catch((error) => {
+            throw { status: 500, error };
+        });
+        if (!director) {
+            throw { status: 400, error: "Director not found" };
+        }
+        return { status: 200, message: "Director updated" };
     }
-    return { status: 200, message: "Director updated" };
+    catch (error) {
+        throw error;
+    }
 });
-exports.updateDirectorDocument = updateDirectorDocument;
+exports.updateDirectorService = updateDirectorService;
 const deleteMovieFromArray = (id, movieId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield Director.findByIdAndUpdate(id, {
         $pull: { movies: movieId },
@@ -32,33 +39,50 @@ const deleteMovieFromArray = (id, movieId) => __awaiter(void 0, void 0, void 0, 
 });
 exports.deleteMovieFromArray = deleteMovieFromArray;
 const getDirectorService = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const director = yield Director.findById(id);
-    if (!director) {
-        return { status: 400, error: "Director not found" };
+    try {
+        const director = yield Director.findById(id).catch((error) => {
+            throw { status: 500, error };
+        });
+        if (!director) {
+            throw { status: 400, error: "Director not found" };
+        }
+        return { status: 200, message: "Director found", director };
     }
-    return director;
+    catch (error) {
+        throw error;
+    }
 });
 exports.getDirectorService = getDirectorService;
 const createDirectorService = (newDirectorData) => __awaiter(void 0, void 0, void 0, function* () {
-    const director = new Director({
-        name: newDirectorData.name,
-        bio: newDirectorData.bio,
-        imageURL: newDirectorData.imageURL,
-        movies: newDirectorData.movies,
-    });
-    yield director.save((error) => {
-        if (error) {
-            return { status: 400, error: error.message.startsWith("E11000") ? "Director already exists" : error.message };
-        }
-    });
-    return { status: 201, message: "Director created" };
+    try {
+        const director = new Director({
+            name: newDirectorData.name,
+            bio: newDirectorData.bio,
+            imageURL: newDirectorData.imageURL,
+            movies: newDirectorData.movies,
+        });
+        yield director.save().catch((error) => {
+            throw { status: 400, error: error.message.startsWith("E11000") ? "Director already exists" : error.message };
+        });
+        return { status: 201, message: "Director created" };
+    }
+    catch (error) {
+        throw error;
+    }
 });
 exports.createDirectorService = createDirectorService;
 const deleteDirectorService = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const director = yield Director.findByIdAndDelete(id);
-    if (!director) {
-        return { status: 404, error: "Director not found" };
+    try {
+        const director = yield Director.findByIdAndDelete(id).catch((error) => {
+            throw { status: 500, error: error.message };
+        });
+        if (!director) {
+            throw { status: 400, error: "Director not found" };
+        }
+        return { status: 200, message: "Director deleted" };
     }
-    return { status: 200, message: "Director deleted" };
+    catch (error) {
+        throw error;
+    }
 });
 exports.deleteDirectorService = deleteDirectorService;

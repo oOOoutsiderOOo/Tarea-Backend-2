@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteDirectorService = exports.updateDirectorDocument = exports.deleteMovieFromArray = exports.createDirectorService = exports.getDirectorService = exports.deleteMovieService = exports.updateMovieService = exports.createMovieService = exports.getMoviesService = exports.addFavService = exports.registerService = exports.loginService = exports.decodeToken = exports.createToken = void 0;
+exports.deleteDirectorService = exports.updateDirectorService = exports.deleteMovieFromArray = exports.createDirectorService = exports.getDirectorService = exports.deleteMovieService = exports.updateMovieService = exports.createMovieService = exports.getMoviesService = exports.addFavService = exports.registerService = exports.loginService = exports.decodeToken = exports.createToken = void 0;
 var auth_service_1 = require("./auth.service");
 Object.defineProperty(exports, "createToken", { enumerable: true, get: function () { return auth_service_1.createToken; } });
 Object.defineProperty(exports, "decodeToken", { enumerable: true, get: function () { return auth_service_1.decodeToken; } });
@@ -17,5 +17,5 @@ var directors_service_1 = require("./directors.service");
 Object.defineProperty(exports, "getDirectorService", { enumerable: true, get: function () { return directors_service_1.getDirectorService; } });
 Object.defineProperty(exports, "createDirectorService", { enumerable: true, get: function () { return directors_service_1.createDirectorService; } });
 Object.defineProperty(exports, "deleteMovieFromArray", { enumerable: true, get: function () { return directors_service_1.deleteMovieFromArray; } });
-Object.defineProperty(exports, "updateDirectorDocument", { enumerable: true, get: function () { return directors_service_1.updateDirectorDocument; } });
+Object.defineProperty(exports, "updateDirectorService", { enumerable: true, get: function () { return directors_service_1.updateDirectorService; } });
 Object.defineProperty(exports, "deleteDirectorService", { enumerable: true, get: function () { return directors_service_1.deleteDirectorService; } });
