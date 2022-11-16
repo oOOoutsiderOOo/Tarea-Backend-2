@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addFav = exports.register = exports.login = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const services_1 = require("../services");
 const schemas_1 = require("../schemas");
 const User = require("../models/user");
@@ -23,15 +19,10 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!parseResult.success) {
         return res.status(400).send({ error: parseResult.error.message });
     }
-    const dbUser = yield User.findOne({ email: parseResult.data.email });
-    if (!dbUser) {
-        return res.status(400).send({ error: "User not found" });
-    }
-    if (!bcrypt_1.default.compareSync(password, dbUser.password)) {
-        return res.status(400).send({ error: "Invalid password" });
-    }
-    const token = (0, services_1.createToken)(dbUser._id);
-    res.status(200).send({ token });
+    const user = yield (0, services_1.loginService)(parseResult.data.email, password).catch(error => {
+        return res.status(500).send({ error: error.message });
+    });
+    res.status(user.status).send(Object.assign({}, user));
 });
 exports.login = login;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -40,31 +31,17 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!parseResult.success) {
         return res.status(400).send({ error: parseResult.error.message });
     }
-    const newUser = new User({
-        email: parseResult.data.email,
-        password: parseResult.data.password,
+    const response = yield (0, services_1.registerService)(parseResult.data.email, password).catch(error => {
+        return res.status(500).send({ error: error.message });
     });
-    User.findOne({ email: newUser.email }, (error, user) => {
-        if (error) {
-            return res.status(500).send({ error });
-        }
-        if (user) {
-            return res.status(400).send({ error: "User already exists" });
-        }
-        newUser.save((error) => {
-            if (error) {
-                return res.status(400).send({
-                    error: "Email is taken",
-                });
-            }
-            res.status(200)
-                .send({
-                message: "Signup success! Please login.",
-            })
-                .redirect("/login");
-        });
-    });
+    res.status(response.status).send(response);
 });
 exports.register = register;
-const addFav = (req, res) => __awaiter(void 0, void 0, void 0, function* () { });
+const addFav = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, favId } = req.body;
+    const response = yield (0, services_1.addFavService)(userId, favId).catch(error => {
+        return res.status(500).send({ error: error.message });
+    });
+    res.status(response.status).send(response);
+});
 exports.addFav = addFav;

@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import { MongooseError } from "mongoose";
-import bcrypt from "bcrypt";
-import { createToken } from "../services";
-import { IUser } from "../models/user";
+import { loginService, registerService, addFavService } from "../services";
 import { UserSchema } from "../schemas";
 const User = require("../models/user");
 
@@ -14,15 +11,10 @@ const login = async (req: Request, res: Response) => {
         return res.status(400).send({ error: parseResult.error.message });
     }
 
-    const dbUser = await User.findOne({ email: parseResult.data.email });
-    if (!dbUser) {
-        return res.status(400).send({ error: "User not found" });
-    }
-    if (!bcrypt.compareSync(password, dbUser.password)) {
-        return res.status(400).send({ error: "Invalid password" });
-    }
-    const token = createToken(dbUser._id);
-    res.status(200).send({ token });
+    const user = await loginService(parseResult.data.email, password).catch(error => {
+        return res.status(500).send({ error: error.message });
+    });
+    res.status(user.status as number).send({ ...user });
 };
 
 const register = async (req: Request, res: Response) => {
@@ -33,34 +25,21 @@ const register = async (req: Request, res: Response) => {
         return res.status(400).send({ error: parseResult.error.message });
     }
 
-    const newUser = new User({
-        email: parseResult.data.email,
-        password: parseResult.data.password,
+    const response = await registerService(parseResult.data.email, password).catch(error => {
+        return res.status(500).send({ error: error.message });
     });
 
-    User.findOne({ email: newUser.email }, (error: MongooseError, user: IUser) => {
-        if (error) {
-            return res.status(500).send({ error });
-        }
-        if (user) {
-            return res.status(400).send({ error: "User already exists" });
-        }
-
-        newUser.save((error: MongooseError) => {
-            if (error) {
-                return res.status(400).send({
-                    error: "Email is taken",
-                });
-            }
-            res.status(200)
-                .send({
-                    message: "Signup success! Please login.",
-                })
-                .redirect("/login");
-        });
-    });
+    res.status(response.status as number).send(response);
 };
 
-const addFav = async (req: Request, res: Response) => {};
+const addFav = async (req: Request, res: Response) => {
+    const { userId, favId } = req.body;
+
+    const response = await addFavService(userId, favId).catch(error => {
+        return res.status(500).send({ error: error.message });
+    });
+
+    res.status(response.status as number).send(response);
+};
 
 export { login, register, addFav };

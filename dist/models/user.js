@@ -9,7 +9,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const UserSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    favorites: { type: Array },
+    favorites: { type: [mongoose_1.Schema.Types.ObjectId], ref: "Movie" },
     createdAt: { type: Date, default: Date.now() },
 });
 UserSchema.pre("save", function (next) {

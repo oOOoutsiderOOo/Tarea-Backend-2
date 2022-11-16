@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createToken, decodeToken } from "../services";
+import { decodeToken } from "../services";
 
 const isAuth = (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers.authorization) {
@@ -7,7 +7,9 @@ const isAuth = (req: Request, res: Response, next: NextFunction) => {
     }
     const token = req.headers.authorization.split(" ")[1];
     const payload = decodeToken(token);
-    console.log(payload);
+    if (payload?.message) {
+        return res.status(401).send(payload.message);
+    }
     next();
 };
 

@@ -7,7 +7,9 @@ const isAuth = (req, res, next) => {
     }
     const token = req.headers.authorization.split(" ")[1];
     const payload = (0, services_1.decodeToken)(token);
-    console.log(payload);
+    if (payload === null || payload === void 0 ? void 0 : payload.message) {
+        return res.status(401).send(payload.message);
+    }
     next();
 };
 exports.default = isAuth;

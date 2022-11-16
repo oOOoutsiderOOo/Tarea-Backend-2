@@ -11,25 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovies = void 0;
 const schemas_1 = require("../schemas");
-const directors_service_1 = require("../services/directors.service");
-const Movie = require("../models/movie");
-const Director = require("../models/director");
+const services_1 = require("../services");
 const getMovies = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const directorId = req.params.id;
-    try {
-        const director = yield Director.findById(directorId);
-        if (!director) {
-            return res.status(404).send({ error: "Director not found" });
-        }
-        const movies = yield Movie.find({ directorId });
-        if (movies.length === 0) {
-            return res.status(404).send({ error: `${director.name} has no movies in the app. Go ahead and add one!` });
-        }
-        res.status(200).send(movies);
-    }
-    catch (error) {
-        res.status(500).send({ error });
-    }
+    const result = yield (0, services_1.getMoviesService)(directorId).catch((error) => {
+        return { status: 500, error };
+    });
+    res.status(result.status).send(result);
 });
 exports.getMovies = getMovies;
 const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -38,38 +26,10 @@ const createMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!parseResult.success) {
         return res.status(400).send({ error: parseResult.error.message });
     }
-    try {
-        const checkedDirector = yield Director.findById(directorId);
-        if (!checkedDirector) {
-            return res.status(404).send({ error: "Director not found" });
-        }
-        const newMovie = new Movie({
-            directorId: parseResult.data.directorId,
-            title: parseResult.data.title,
-            synopsis: parseResult.data.synopsis,
-            coverURL: parseResult.data.coverURL,
-            link: parseResult.data.link,
-        });
-        newMovie.save((error) => {
-            if (error) {
-                return res.status(400).send({
-                    error: error.message.startsWith("E11000") ? "Movie already exists" : error.message,
-                });
-            }
-            (0, directors_service_1.updateDirectorDocument)(directorId, { movies: [...checkedDirector.movies, newMovie._id] })
-                .then(() => {
-                res.status(201).send({
-                    message: "Movie created",
-                });
-            })
-                .catch((error) => {
-                return res.status(500).send({ error });
-            });
-        });
-    }
-    catch (error) {
-        res.status(500).send({ error });
-    }
+    const result = yield (0, services_1.createMovieService)(directorId, title, synopsis, coverURL, link).catch((error) => {
+        return { status: 500, error };
+    });
+    res.status(result.status).send(result);
 });
 exports.createMovie = createMovie;
 const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -79,35 +39,17 @@ const updateMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!parseResult.success) {
         return res.status(400).send({ error: parseResult.error.message });
     }
-    try {
-        const movie = yield Movie.findByIdAndUpdate(id, parseResult.data);
-        if (!movie) {
-            return res.status(404).send({ error: "Movie not found" });
-        }
-        res.status(200).send({ message: "Movie updated" });
-    }
-    catch (error) {
-        res.status(500).send({ error });
-    }
+    const result = yield (0, services_1.updateMovieService)(id, parseResult.data).catch((error) => {
+        return { status: 500, error };
+    });
+    res.status(result.status).send({ message: "Movie updated" });
 });
 exports.updateMovie = updateMovie;
 const deleteMovie = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    try {
-        const movie = yield Movie.findByIdAndDelete(id);
-        if (!movie) {
-            return res.status(404).send({ error: "Movie not found" });
-        }
-        (0, directors_service_1.deleteMovieFromArray)(movie.directorId, id)
-            .then(() => {
-            res.status(200).send({ message: "Movie deleted" });
-        })
-            .catch((error) => {
-            return res.status(500).send({ error });
-        });
-    }
-    catch (error) {
-        res.status(500).send({ error });
-    }
+    const result = yield (0, services_1.deleteMovieService)(id).catch((error) => {
+        return { status: 500, error };
+    });
+    res.status(result.status).send({ message: "Movie deleted" });
 });
 exports.deleteMovie = deleteMovie;

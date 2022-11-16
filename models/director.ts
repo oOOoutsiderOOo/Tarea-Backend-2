@@ -5,7 +5,7 @@ const DirectorSchema = new Schema({
     name: { type: String, required: true, unique: true },
     bio: { type: String, required: true },
     imageURL: { type: String, required: true },
-    movies: { type: [String] },
+    movies: { type: [Schema.Types.ObjectId], ref: "Movie" },
     createdAt: { type: Date, default: Date.now() },
 });
 

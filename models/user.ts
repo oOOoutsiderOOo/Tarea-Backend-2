@@ -14,7 +14,7 @@ export interface IUserModel extends IUser, Document {}
 const UserSchema: Schema = new Schema<IUserModel>({
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
-    favorites: { type: Array },
+    favorites: { type: [Schema.Types.ObjectId], ref: "Movie" },
     createdAt: { type: Date, default: Date.now() },
 });
 
